@@ -29,6 +29,9 @@ export const SwitchSceneDialog = ({
 
   const currentContainerName = getContainerNameFromStorage();
 
+  console.log('SwitchSceneDialog[containerList]:' + JSON.stringify(containerList))
+  console.log('SwitchSceneDialog[currentContainerName]:' + currentContainerName)
+
   return (
     <>
       {appState.openDialog === "switchScene" && (
