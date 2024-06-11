@@ -24,6 +24,8 @@ import { getContainerNameFromStorage } from "./localStorage";
 
 const filesStore = createStore("files-db", "files-store");
 
+const STORE_OPEN = process.env.REACT_APP_REMOTE_STORE_OPEN;
+
 class LocalFileManager extends FileManager {
   clearObsoleteFiles = async (opts: { currentFileIds: FileId[] }) => {
     await entries(filesStore).then((entries) => {
@@ -49,17 +51,31 @@ const saveDataStateToLocalStorage = (
   appState: AppState,
 ) => {
   try {
+    var containerName = getContainerNameFromStorage();
+    var elementsJson = JSON.stringify(clearElementsForLocalStorage(elements));
+    var appStateJson = JSON.stringify(clearAppStateForLocalStorage(appState));
     localStorage.setItem(
       // STORAGE_KEYS.LOCAL_STORAGE_ELEMENTS,
-      getContainerNameFromStorage(),
-      JSON.stringify(clearElementsForLocalStorage(elements)),
+      containerName,
+      elementsJson,
     );
 
     localStorage.setItem(
       STORAGE_KEYS.LOCAL_STORAGE_APP_STATE,
-      JSON.stringify(clearAppStateForLocalStorage(appState)),
+      appStateJson,
     );
     updateBrowserStateVersion(STORAGE_KEYS.VERSION_DATA_STATE);
+    console.log('STORE_OPEN:' + STORE_OPEN)
+
+    if (STORE_OPEN) {
+
+      postData('http://localhost:8083/api/student/excalidraw/file/addOrUpdate', {
+        containerName: "",
+        elementsJson: "",
+        appStateJson: "",
+      }).then(response => console.log(response));
+    }
+
   } catch (error: any) {
     // Unable to access window.localStorage
     console.error(error);
@@ -181,4 +197,38 @@ export class LocalData {
       return { savedFiles, erroredFiles };
     },
   });
+
 }
+
+type Data = {
+  containerName: string;
+  elementsJson: string;
+  appStateJson: string;
+};
+
+const postData = (url = '', data: Data) => {
+  // 将数据转换为JSON字符串
+  const postData = JSON.stringify(data);
+
+  // 设置头部信息，指示正在发送JSON数据
+  const headers = new Headers({
+    'Content-Type': 'application/json',
+    // 'Access-Control-Allow-Origin': '*',
+    // 'Access-Control-Allow-Methods': 'GET, POST, OPTIONS, PUT, PATCH, DELETE',
+    // 'Access-Control-Allow-Headers': 'X-Requested-With,content-type'
+  });
+
+  // 发送POST请求
+  return fetch(url, {
+    method: 'POST',
+    headers: headers,
+    body: postData
+  })
+    .then(response => {
+      if (response.ok) {
+        return response.json(); // 如果返回数据不是JSON，可以省略这一步
+      }
+      throw new Error('Network response was not ok.');
+    })
+    .catch(error => console.error('There has been a problem with your fetch operation:', error));
+};
