@@ -43,6 +43,7 @@ declare namespace NodeJS {
     readonly REACT_APP_BACKEND_V2_POST_URL: string;
     readonly REACT_APP_PORTAL_URL: string;
     readonly REACT_APP_FIREBASE_CONFIG: string;
+    readonly REACT_APP_REMOTE_STORE_OPEN: boolean; // 开启远程存储
   }
 }
 
