@@ -78,8 +78,8 @@ export class LocalData {
     ) => {
       saveDataStateToLocalStorage(elements, appState);
 
-      console.log('LocalData_save[elements]:' + JSON.stringify(elements))
-      console.log('LocalData_save[appState]:' + JSON.stringify(appState))
+      console.log(`LocalData_save[elements]:${JSON.stringify(elements)}`);
+      console.log(`LocalData_save[appState]:${JSON.stringify(appState)}`);
 
       await this.fileStorage.saveFiles({
         elements,

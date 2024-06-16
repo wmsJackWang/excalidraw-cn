@@ -45,9 +45,10 @@ export const importFromLocalStorage = () => {
     savedElements = localStorage.getItem(currentContainerName);
     savedState = localStorage.getItem(STORAGE_KEYS.LOCAL_STORAGE_APP_STATE);
 
-    console.log('importFromLocalStorage[savedElements]:' + JSON.stringify(savedElements))
-    console.log('importFromLocalStorage[savedState]:' + savedState)
-
+    console.log(
+      `importFromLocalStorage[savedElements]:${JSON.stringify(savedElements)}`,
+    );
+    console.log(`importFromLocalStorage[savedState]:${savedState}`);
   } catch (error: any) {
     // Unable to access localStorage
     console.error(error);
@@ -178,7 +179,7 @@ export const getElementsFromStorage = (
 export const setElementsToStorage = (elements: ExcalidrawElement[] = []) => {
   const currentContainerName = getContainerNameFromStorage();
 
-  console.log('setElementsToStorage[elements]:' + JSON.stringify(elements))
+  console.log(`setElementsToStorage[elements]:${JSON.stringify(elements)}`);
   localStorage.setItem(currentContainerName, JSON.stringify(elements));
 };
 
@@ -193,7 +194,7 @@ export const renameContainerNameToStorage = (
   }
 
   const elements = getElementsFromStorage();
-  console.log('getElementsFromStorage[elements]:' + JSON.stringify(elements))
+  console.log(`getElementsFromStorage[elements]:${JSON.stringify(elements)}`);
 
   setContainerNameToStorage(newName);
 
