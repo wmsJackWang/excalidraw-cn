@@ -31,6 +31,7 @@
     "@types/react": "18.0.15",
     "@types/react-dom": "18.0.6",
     "@types/socket.io-client": "1.4.36",
+    "@umijs/plugin-qiankun": "2.44.1",
     "antd": "5.4.2",
     "browser-fs-access": "0.29.1",
     "clsx": "1.1.1",
@@ -41,6 +42,7 @@
     "idb-keyval": "6.0.3",
     "image-blob-reduce": "3.0.1",
     "jotai": "1.6.4",
+    "localforage": "1.10.0",
     "lodash.throttle": "4.1.1",
     "moment": "2.29.4",
     "nanoid": "3.3.3",
@@ -53,6 +55,7 @@
     "png-chunks-extract": "1.0.0",
     "points-on-curve": "0.2.0",
     "pwacompat": "2.0.17",
+    "qiankun": "2.10.16",
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "react-scripts": "5.0.1",
@@ -91,6 +94,7 @@
     "lint-staged": "12.3.7",
     "pepjs": "0.5.3",
     "prettier": "2.6.2",
+    "react-app-rewired": "2.2.1",
     "rewire": "6.0.0"
   },
   "engines": {

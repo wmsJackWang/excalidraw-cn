@@ -283,6 +283,12 @@ import {
   setContainerIdToStorage,
   setContainerNameToStorage,
 } from "../excalidraw-app/data/localStorage";
+import {
+  getExamStudentCommandFromLocalForage,
+  getExamStudentFileNameFromLocalForage,
+  executeExamStudentCommand,
+  saveToLocalForageStore,
+} from "../excalidraw-app/data/forage";
 
 const deviceContextInitialValue = {
   isSmScreen: false,
@@ -428,9 +434,19 @@ class App extends React.Component<AppProps, AppState> {
 
     this.id = nanoid();
 
+    console.log("setContainerIdToStorage:" + this.id);
     setContainerIdToStorage(this.id);
-
+    console.log("setContainerNameToStorage:" + name);
     setContainerNameToStorage(name);
+    // setContainerNameToStorage("default_canvas-1")
+
+    saveToLocalForageStore("examStudentCommand", "createFile")
+    saveToLocalForageStore("createFileName", "test");
+
+    console.log("examStudentFileName:" + getExamStudentFileNameFromLocalForage())
+    console.log("examStudentCommand:" + getExamStudentCommandFromLocalForage())
+
+    executeExamStudentCommand();
 
     this.library = new Library(this);
     if (excalidrawRef) {

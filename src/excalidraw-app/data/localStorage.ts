@@ -44,7 +44,9 @@ export const importFromLocalStorage = () => {
     // savedElements = localStorage.getItem(STORAGE_KEYS.LOCAL_STORAGE_ELEMENTS);
     savedElements = localStorage.getItem(currentContainerName);
     savedState = localStorage.getItem(STORAGE_KEYS.LOCAL_STORAGE_APP_STATE);
-
+    console.log(
+        `data2:${localStorage.getItem('data2')}`,
+    );
     console.log(
       `importFromLocalStorage[savedElements]:${JSON.stringify(savedElements)}`,
     );
