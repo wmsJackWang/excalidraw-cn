@@ -288,6 +288,8 @@ import {
   getExamStudentFileNameFromLocalForage,
   executeExamStudentCommand,
   saveToLocalForageStore,
+  removeExamStudentCommand,
+  printExamStudentCommandFromLocalForageVal,
 } from "../excalidraw-app/data/forage";
 
 const deviceContextInitialValue = {
@@ -434,17 +436,15 @@ class App extends React.Component<AppProps, AppState> {
 
     this.id = nanoid();
 
-    console.log("setContainerIdToStorage:" + this.id);
+    console.log(`setContainerIdToStorage:${this.id}`);
     setContainerIdToStorage(this.id);
-    console.log("setContainerNameToStorage:" + name);
+    console.log(`setContainerNameToStorage:${name}`);
     setContainerNameToStorage(name);
+    printExamStudentCommandFromLocalForageVal();
     // setContainerNameToStorage("default_canvas-1")
 
-    saveToLocalForageStore("examStudentCommand", "createFile")
-    saveToLocalForageStore("createFileName", "test");
-
-    console.log("examStudentFileName:" + getExamStudentFileNameFromLocalForage())
-    console.log("examStudentCommand:" + getExamStudentCommandFromLocalForage())
+    saveToLocalForageStore("examStudentCommand", "openExcalidrawFile");
+    saveToLocalForageStore("openFileName", "test");
 
     executeExamStudentCommand();
 

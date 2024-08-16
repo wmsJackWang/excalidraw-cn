@@ -46,6 +46,21 @@ class LocalFileManager extends FileManager {
   };
 }
 
+export const queryExcalidrawFileData = async (fileName: string) => {
+  try {
+    postData("http://localhost:8083/api/student/excalidraw/file/query", {
+      containerName: fileName,
+      elementsJson: "",
+      appStateJson: "",
+    }).then((response) =>
+      console.log(`excalidraw query:${JSON.stringify(response)}`),
+    );
+  } catch (error: any) {
+    // Unable to access window.localStorage
+    console.error(error);
+  }
+};
+
 const saveDataStateToLocalStorage = (
   elements: readonly ExcalidrawElement[],
   appState: AppState,
@@ -68,9 +83,9 @@ const saveDataStateToLocalStorage = (
       postData(
         "http://localhost:8083/api/student/excalidraw/file/addOrUpdate",
         {
-          containerName: "",
-          elementsJson: "",
-          appStateJson: "",
+          containerName,
+          elementsJson,
+          appStateJson,
         },
       ).then((response) => console.log(response));
     }
