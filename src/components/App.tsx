@@ -284,11 +284,11 @@ import {
   setContainerNameToStorage,
 } from "../excalidraw-app/data/localStorage";
 import {
-  getExamStudentCommandFromLocalForage,
-  getExamStudentFileNameFromLocalForage,
+  //   getExamStudentCommandFromLocalForage,
+  //   getExamStudentFileNameFromLocalForage,
   executeExamStudentCommand,
   saveToLocalForageStore,
-  removeExamStudentCommand,
+  //   removeExamStudentCommand,
   printExamStudentCommandFromLocalForageVal,
 } from "../excalidraw-app/data/forage";
 

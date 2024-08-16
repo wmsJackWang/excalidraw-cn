@@ -88,7 +88,7 @@ export const executeExamStudentCommand = async () => {
 
     const containerList: string[] = getContainerListFromStorage();
 
-    if (command == "createNewFile") {
+    if (command === "createNewFile") {
       const createFileName =
         (await getExamStudentFileNameFromLocalForage()) as string;
       if (containerList.includes(createFileName)) {
@@ -111,7 +111,7 @@ export const executeExamStudentCommand = async () => {
       window.location.reload();
       return;
     }
-    if (command == "openExcalidrawFile") {
+    if (command === "openExcalidrawFile") {
       const openFileName =
         (await getExamStudentOpenFileNameFromLocalForage()) as string;
 
