@@ -434,17 +434,19 @@ class App extends React.Component<AppProps, AppState> {
 
     this.id = nanoid();
 
-    console.log("setContainerIdToStorage:" + this.id);
+    console.log(`setContainerIdToStorage:${this.id}`);
     setContainerIdToStorage(this.id);
-    console.log("setContainerNameToStorage:" + name);
+    console.log(`setContainerNameToStorage:${name}`);
     setContainerNameToStorage(name);
     // setContainerNameToStorage("default_canvas-1")
 
-    saveToLocalForageStore("examStudentCommand", "createFile")
+    saveToLocalForageStore("examStudentCommand", "createFile");
     saveToLocalForageStore("createFileName", "test");
 
-    console.log("examStudentFileName:" + getExamStudentFileNameFromLocalForage())
-    console.log("examStudentCommand:" + getExamStudentCommandFromLocalForage())
+    console.log(
+      `examStudentFileName:${getExamStudentFileNameFromLocalForage()}`,
+    );
+    console.log(`examStudentCommand:${getExamStudentCommandFromLocalForage()}`);
 
     executeExamStudentCommand();
 
