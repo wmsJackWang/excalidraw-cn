@@ -41,7 +41,6 @@ export const importFromLocalStorage = () => {
   const currentContainerName = getContainerNameFromStorage();
 
   try {
-    // savedElements = localStorage.getItem(STORAGE_KEYS.LOCAL_STORAGE_ELEMENTS);
     savedElements = localStorage.getItem(currentContainerName);
     savedState = localStorage.getItem(STORAGE_KEYS.LOCAL_STORAGE_APP_STATE);
     console.log(`data2:${localStorage.getItem("data2")}`);
@@ -179,6 +178,7 @@ export const getElementsFromStorage = (
 export const setElementsToStorage = (elements: ExcalidrawElement[] = []) => {
   const currentContainerName = getContainerNameFromStorage();
 
+  console.log(`currentContainerName:${currentContainerName}`);
   console.log(`setElementsToStorage[elements]:${JSON.stringify(elements)}`);
   localStorage.setItem(currentContainerName, JSON.stringify(elements));
 };

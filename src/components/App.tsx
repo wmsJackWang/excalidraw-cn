@@ -284,10 +284,12 @@ import {
   setContainerNameToStorage,
 } from "../excalidraw-app/data/localStorage";
 import {
-  getExamStudentCommandFromLocalForage,
-  getExamStudentFileNameFromLocalForage,
-  executeExamStudentCommand,
-  saveToLocalForageStore,
+  // getExamStudentCommandFromLocalForage,
+  // getExamStudentFileNameFromLocalForage,
+  // executeExamStudentCommand,
+  // saveToLocalForageStore,
+  //   removeExamStudentCommand,
+  printExamStudentCommandFromLocalForageVal,
 } from "../excalidraw-app/data/forage";
 
 const deviceContextInitialValue = {
@@ -438,17 +440,11 @@ class App extends React.Component<AppProps, AppState> {
     setContainerIdToStorage(this.id);
     console.log(`setContainerNameToStorage:${name}`);
     setContainerNameToStorage(name);
+    printExamStudentCommandFromLocalForageVal();
     // setContainerNameToStorage("default_canvas-1")
 
-    saveToLocalForageStore("examStudentCommand", "createFile");
-    saveToLocalForageStore("createFileName", "test");
-
-    console.log(
-      `examStudentFileName:${getExamStudentFileNameFromLocalForage()}`,
-    );
-    console.log(`examStudentCommand:${getExamStudentCommandFromLocalForage()}`);
-
-    executeExamStudentCommand();
+    // saveToLocalForageStore("examStudentCommand", "createFile");
+    // saveToLocalForageStore("createFileName", "test");
 
     this.library = new Library(this);
     if (excalidrawRef) {
@@ -508,6 +504,14 @@ class App extends React.Component<AppProps, AppState> {
 
     this.actionManager.registerAction(createUndoAction(this.history));
     this.actionManager.registerAction(createRedoAction(this.history));
+
+    // let isExecuteExamStudentCommandEnd = false
+    // executeExamStudentCommand().then(() => {
+    //   console.log("executeExamStudentCommand finish")
+    //   isExecuteExamStudentCommandEnd = true
+    // });
+    //
+    // console.log("after executeExamStudentCommand")
   }
 
   private renderCanvas() {

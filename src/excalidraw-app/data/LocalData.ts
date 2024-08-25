@@ -21,6 +21,7 @@ import { FileManager } from "./FileManager";
 import { Locker } from "./Locker";
 import { updateBrowserStateVersion } from "./tabSync";
 import { getContainerNameFromStorage } from "./localStorage";
+import { ExcalidrawFileData, executeExamStudentCommand } from "./forage";
 
 const filesStore = createStore("files-db", "files-store");
 
@@ -46,7 +47,25 @@ class LocalFileManager extends FileManager {
   };
 }
 
-const saveDataStateToLocalStorage = (
+export const queryExcalidrawFileData = async (containerName: string) => {
+  const elementsJson = "";
+  const appStateJson = "";
+  try {
+    return await postData(
+      "http://localhost:8083/api/student/excalidraw/file/query",
+      {
+        containerName,
+        elementsJson,
+        appStateJson,
+      },
+    );
+  } catch (error: any) {
+    // Unable to access window.localStorage
+    console.error(error);
+  }
+};
+
+const saveDataStateToLocalStorage = async (
   elements: readonly ExcalidrawElement[],
   appState: AppState,
 ) => {
@@ -54,6 +73,9 @@ const saveDataStateToLocalStorage = (
     const containerName = getContainerNameFromStorage();
     const elementsJson = JSON.stringify(clearElementsForLocalStorage(elements));
     const appStateJson = JSON.stringify(clearAppStateForLocalStorage(appState));
+
+    console.log(`elementsJson:${elementsJson}`);
+    console.log(`appStateJson:${appStateJson}`);
     localStorage.setItem(
       // STORAGE_KEYS.LOCAL_STORAGE_ELEMENTS,
       containerName,
@@ -65,14 +87,15 @@ const saveDataStateToLocalStorage = (
     console.log(`STORE_OPEN:${STORE_OPEN}`);
 
     if (STORE_OPEN) {
-      postData(
+      const res = await postData(
         "http://localhost:8083/api/student/excalidraw/file/addOrUpdate",
         {
-          containerName: "",
-          elementsJson: "",
-          appStateJson: "",
+          containerName,
+          elementsJson,
+          appStateJson,
         },
-      ).then((response) => console.log(response));
+      );
+      console.log(`saveDataStateToLocalStorage, res:${JSON.stringify(res)}`);
     }
   } catch (error: any) {
     // Unable to access window.localStorage
@@ -90,10 +113,31 @@ export class LocalData {
       files: BinaryFiles,
       onFilesSaved: () => void,
     ) => {
-      saveDataStateToLocalStorage(elements, appState);
+      const data: ExcalidrawFileData | undefined =
+        await executeExamStudentCommand();
+      let examElements: readonly ExcalidrawElement[] =
+        data?.elements as Readonly<ExcalidrawElement[]>;
+      const command = data?.command as string;
+      if (examElements === null) {
+        examElements = [];
+      }
+      if (command === "createNewFile" || command === "openExcalidrawFile") {
+        elements = examElements;
+      }
 
+      console.log("after executeExamStudentCommand");
+      console.log(
+        `after executeExamStudentCommand， elements:${JSON.stringify(
+          elements,
+        )}`,
+      );
+      await saveDataStateToLocalStorage(elements, appState);
       console.log(`LocalData_save[elements]:${JSON.stringify(elements)}`);
       console.log(`LocalData_save[appState]:${JSON.stringify(appState)}`);
+
+      if (command === "createNewFile" || command === "openExcalidrawFile") {
+        window.location.reload();
+      }
 
       await this.fileStorage.saveFiles({
         elements,
