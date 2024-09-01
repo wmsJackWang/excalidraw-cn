@@ -1,6 +1,7 @@
 import localforage from "localforage";
 import {
   getContainerListFromStorage,
+  getContainerNameFromStorage,
   setContainerListToStorage,
   setContainerNameToStorage,
   setElementsToStorage,
@@ -83,12 +84,6 @@ export const executeExamStudentCommand = async () => {
     const command = (await getExamStudentCommandFromLocalForage()) as string;
     console.log(`secondCommand:${command}`);
 
-    if (command == null) {
-      console.log("exam_student command not exist");
-      removeExamStudentCommand();
-      return;
-    }
-
     const containerList: string[] = getContainerListFromStorage();
     if (command === "createNewFile") {
       const createFileName =
@@ -118,7 +113,7 @@ export const executeExamStudentCommand = async () => {
       const openFileName =
         (await getExamStudentOpenFileNameFromLocalForage()) as string;
 
-      console.log("打开文件");
+      console.log(`打开文件:${openFileName}`);
       message.success(`open file:${openFileName}`);
       setContainerNameToStorage(openFileName);
       const queryResult = (await queryExcalidrawFileData(
@@ -136,15 +131,33 @@ export const executeExamStudentCommand = async () => {
       if (!containerList.includes(openFileName)) {
         setContainerListToStorage([...containerList, openFileName]);
       }
-      const elements: readonly ExcalidrawElement[] = praseElements;
-      // setElementsToStorage(elements);
+      const elements: ExcalidrawElement[] = praseElements;
+      setElementsToStorage(elements);
       removeExamStudentCommand();
       // window.location.reload();
       const resp: ExcalidrawFileData = { elements, command };
       return resp;
     }
 
-    const elements: readonly ExcalidrawElement[] = [];
+    const containerName = getContainerNameFromStorage();
+    const queryResult = (await queryExcalidrawFileData(
+      containerName,
+    )) as Object;
+    console.log(`queryResult:${JSON.stringify(queryResult)}`);
+    const resJson = JSON.parse(JSON.stringify(queryResult));
+    const response = resJson.response;
+    const fileData = response.fileData;
+    const fileDataJson = JSON.parse(fileData);
+    const praseElements = JSON.parse(
+      fileDataJson.elementsJson,
+    ) as ExcalidrawElement[];
+
+    if (!containerList.includes(containerName)) {
+      setContainerListToStorage([...containerList, containerName]);
+    }
+    const elements: ExcalidrawElement[] = praseElements;
+    setElementsToStorage(elements);
+
     const resp: ExcalidrawFileData = { elements, command };
     return resp;
   } catch (error: any) {

@@ -21,7 +21,6 @@ import { FileManager } from "./FileManager";
 import { Locker } from "./Locker";
 import { updateBrowserStateVersion } from "./tabSync";
 import { getContainerNameFromStorage } from "./localStorage";
-import { ExcalidrawFileData, executeExamStudentCommand } from "./forage";
 
 const filesStore = createStore("files-db", "files-store");
 
@@ -113,31 +112,27 @@ export class LocalData {
       files: BinaryFiles,
       onFilesSaved: () => void,
     ) => {
-      const data: ExcalidrawFileData | undefined =
-        await executeExamStudentCommand();
-      let examElements: readonly ExcalidrawElement[] =
-        data?.elements as Readonly<ExcalidrawElement[]>;
-      const command = data?.command as string;
-      if (examElements === null) {
-        examElements = [];
-      }
-      if (command === "createNewFile" || command === "openExcalidrawFile") {
-        elements = examElements;
-      }
+      // const data: ExcalidrawFileData | undefined =
+      //   await executeExamStudentCommand();
+      // let examElements: readonly ExcalidrawElement[] =
+      //   data?.elements as Readonly<ExcalidrawElement[]>;
+      // const command = data?.command as string;
+      // if (examElements === null) {
+      //   examElements = [];
+      // }
+      // if (command === "createNewFile" || command === "openExcalidrawFile") {
+      //   elements = examElements;
+      // }
 
-      console.log("after executeExamStudentCommand");
-      console.log(
-        `after executeExamStudentCommand， elements:${JSON.stringify(
-          elements,
-        )}`,
-      );
+      // console.log("after executeExamStudentCommand");
+      // console.log(
+      //   `after executeExamStudentCommand， elements:${JSON.stringify(
+      //     elements,
+      //   )}`,
+      // );
       await saveDataStateToLocalStorage(elements, appState);
       console.log(`LocalData_save[elements]:${JSON.stringify(elements)}`);
       console.log(`LocalData_save[appState]:${JSON.stringify(appState)}`);
-
-      if (command === "createNewFile" || command === "openExcalidrawFile") {
-        window.location.reload();
-      }
 
       await this.fileStorage.saveFiles({
         elements,

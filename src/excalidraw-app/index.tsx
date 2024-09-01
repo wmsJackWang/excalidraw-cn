@@ -63,6 +63,7 @@ import {
   getContainerNameFromStorage,
   getLibraryItemsFromStorage,
   importFromLocalStorage,
+  importFromLocalStorageV2,
   importUsernameFromLocalStorage,
   getAllContainerListElementsFromStorage,
 } from "./data/localStorage";
@@ -112,7 +113,8 @@ const initializeScene = async (opts: {
   );
   const externalUrlMatch = window.location.hash.match(/^#url=(.*)$/);
 
-  const localDataState = importFromLocalStorage();
+  console.log("[importFromLocalStorage] initializeScene");
+  const localDataState = await importFromLocalStorageV2();
 
   let scene: RestoredDataState & {
     scrollToContent?: boolean;

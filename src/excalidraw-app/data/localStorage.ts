@@ -7,6 +7,7 @@ import {
 import { clearElementsForLocalStorage } from "../../element";
 import { STORAGE_KEYS } from "../app_constants";
 import { ImportedDataState } from "../../data/types";
+import { executeExamStudentCommand } from "./forage";
 
 export const saveUsernameToLocalStorage = (username: string) => {
   try {
@@ -32,6 +33,56 @@ export const importUsernameFromLocalStorage = (): string | null => {
   }
 
   return null;
+};
+
+export const importFromLocalStorageV2 = async () => {
+  let savedElements = null;
+  let savedState = null;
+
+  // const data: ExcalidrawFileData | undefined =
+  //   await executeExamStudentCommand();
+  await executeExamStudentCommand();
+
+  const currentContainerName = getContainerNameFromStorage();
+
+  try {
+    savedElements = localStorage.getItem(currentContainerName);
+    savedState = localStorage.getItem(STORAGE_KEYS.LOCAL_STORAGE_APP_STATE);
+    console.log(`data2:${localStorage.getItem("data2")}`);
+    console.log(
+      `importFromLocalStorage[savedElements]:${JSON.stringify(savedElements)}`,
+    );
+    console.log(`importFromLocalStorage[savedState]:${savedState}`);
+  } catch (error: any) {
+    // Unable to access localStorage
+    console.error(error);
+  }
+
+  let elements: ExcalidrawElement[] = [];
+  if (savedElements) {
+    try {
+      elements = clearElementsForLocalStorage(JSON.parse(savedElements));
+    } catch (error: any) {
+      console.error(error);
+      // Do nothing because elements array is already empty
+    }
+  }
+
+  let appState = null;
+  if (savedState) {
+    try {
+      appState = {
+        ...getDefaultAppState(),
+        ...clearAppStateForLocalStorage(
+          JSON.parse(savedState) as Partial<AppState>,
+        ),
+      };
+    } catch (error: any) {
+      console.error(error);
+      // Do nothing because appState is already null
+    }
+  }
+  return { elements, appState };
 };
 
 export const importFromLocalStorage = () => {
