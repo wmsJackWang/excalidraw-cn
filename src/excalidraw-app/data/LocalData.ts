@@ -20,11 +20,18 @@ import { SAVE_TO_LOCAL_STORAGE_TIMEOUT, STORAGE_KEYS } from "../app_constants";
 import { FileManager } from "./FileManager";
 import { Locker } from "./Locker";
 import { updateBrowserStateVersion } from "./tabSync";
-import { getContainerNameFromStorage } from "./localStorage";
+import {
+  getContainerNameFromStorage,
+  getContainerNameParentIdFromStorage,
+} from "./localStorage";
+import html2canvas from "html2canvas";
 
 const filesStore = createStore("files-db", "files-store");
 
 const STORE_OPEN = process.env.REACT_APP_REMOTE_STORE_OPEN;
+
+// const SERVER_URL = "localhost:8083"
+const SERVER_URL = "bittechblog.com/study";
 
 class LocalFileManager extends FileManager {
   clearObsoleteFiles = async (opts: { currentFileIds: FileId[] }) => {
@@ -46,16 +53,22 @@ class LocalFileManager extends FileManager {
   };
 }
 
-export const queryExcalidrawFileData = async (containerName: string) => {
+export const queryExcalidrawFileData = async (
+  containerName: string,
+  parentId: string,
+) => {
   const elementsJson = "";
   const appStateJson = "";
+  const imgData = "";
   try {
     return await postData(
-      "http://localhost:8083/api/student/excalidraw/file/query",
+      `http://${SERVER_URL}/api/student/excalidraw/file/query`,
       {
         containerName,
         elementsJson,
         appStateJson,
+        imgData,
+        parentId,
       },
     );
   } catch (error: any) {
@@ -64,9 +77,11 @@ export const queryExcalidrawFileData = async (containerName: string) => {
   }
 };
 
-const saveDataStateToLocalStorage = async (
+const saveDataStateToLocalStorageV2 = (
   elements: readonly ExcalidrawElement[],
   appState: AppState,
+  imgData: string,
+  parentId: string,
 ) => {
   try {
     const containerName = getContainerNameFromStorage();
@@ -75,6 +90,7 @@ const saveDataStateToLocalStorage = async (
 
     console.log(`elementsJson:${elementsJson}`);
     console.log(`appStateJson:${appStateJson}`);
+    console.log(`imgData, saveToDb:${imgData}`);
     localStorage.setItem(
       // STORAGE_KEYS.LOCAL_STORAGE_ELEMENTS,
       containerName,
@@ -86,14 +102,17 @@ const saveDataStateToLocalStorage = async (
     console.log(`STORE_OPEN:${STORE_OPEN}`);
 
     if (STORE_OPEN) {
-      const res = await postData(
-        "http://localhost:8083/api/student/excalidraw/file/addOrUpdate",
+      const res = postData(
+        `http://${SERVER_URL}/api/student/excalidraw/file/addOrUpdate`,
         {
           containerName,
           elementsJson,
           appStateJson,
+          imgData,
+          parentId,
         },
       );
+
       console.log(`saveDataStateToLocalStorage, res:${JSON.stringify(res)}`);
     }
   } catch (error: any) {
@@ -101,6 +120,51 @@ const saveDataStateToLocalStorage = async (
     console.error(error);
   }
 };
+//
+// const saveDataStateToLocalStorage = async (
+//   elements: readonly ExcalidrawElement[],
+//   appState: AppState,
+//   imgData: string,
+// ) => {
+//   try {
+//     const containerName = getContainerNameFromStorage();
+//     const parentId = getContainerNameParentIdFromStorage();
+//     const elementsJson = JSON.stringify(clearElementsForLocalStorage(elements));
+//     const appStateJson = JSON.stringify(clearAppStateForLocalStorage(appState));
+//
+//     console.log(`elementsJson:${elementsJson}`);
+//     console.log(`appStateJson:${appStateJson}`);
+//     //     console.log(`imgData, saveToDb:` + imgData);
+//     console.log(`parentId:${parentId}`);
+//     localStorage.setItem(
+//       // STORAGE_KEYS.LOCAL_STORAGE_ELEMENTS,
+//       containerName,
+//       elementsJson,
+//     );
+//
+//     localStorage.setItem(STORAGE_KEYS.LOCAL_STORAGE_APP_STATE, appStateJson);
+//     updateBrowserStateVersion(STORAGE_KEYS.VERSION_DATA_STATE);
+//     console.log(`STORE_OPEN:${STORE_OPEN}`);
+//
+//     if (STORE_OPEN) {
+//       const res = await postData(
+//         `http://${SERVER_URL}/api/student/excalidraw/file/addOrUpdate`,
+//         {
+//           containerName,
+//           elementsJson,
+//           appStateJson,
+//           imgData,
+//           parentId,
+//         },
+//       );
+//
+//       console.log(`saveDataStateToLocalStorage, res:${JSON.stringify(res)}`);
+//     }
+//   } catch (error: any) {
+//     // Unable to access window.localStorage
+//     console.error(error);
+//   }
+// };
 
 type SavingLockTypes = "collaboration";
 
@@ -130,10 +194,28 @@ export class LocalData {
       //     elements,
       //   )}`,
       // );
-      await saveDataStateToLocalStorage(elements, appState);
-      console.log(`LocalData_save[elements]:${JSON.stringify(elements)}`);
-      console.log(`LocalData_save[appState]:${JSON.stringify(appState)}`);
 
+      let imgData = "" as string;
+      //canvas截图
+      const canvasElement = document.getElementsByClassName(
+        "excalidraw__canvas",
+      )[0] as HTMLElement;
+      const parentId = getContainerNameParentIdFromStorage();
+      html2canvas(canvasElement, {}).then((canvas) => {
+        // canvas.toDataURL() 可以获取图片的 base64 编码
+        const dataUrl = canvas.toDataURL();
+        // 你可以将 dataUrl 设置为一个 img 标签的 src 属性，或者下载图片等
+        console.log(`img base64:${dataUrl}`);
+        //const img = document.querySelector("#imgs")
+        //img.src = dataUrl
+        imgData = dataUrl;
+
+        saveDataStateToLocalStorageV2(elements, appState, imgData, parentId);
+        console.log(`LocalData_save[elements]:${JSON.stringify(elements)}`);
+        console.log(`LocalData_save[appState]:${JSON.stringify(appState)}`);
+        //             console.log(`imgData, saveToDbOut:` + imgData);
+        console.log(`parentId:${parentId}`);
+      });
       await this.fileStorage.saveFiles({
         elements,
         files,
@@ -240,6 +322,8 @@ type Data = {
   containerName: string;
   elementsJson: string;
   appStateJson: string;
+  imgData: string;
+  parentId: string;
 };
 
 const postData = (url = "", data: Data) => {

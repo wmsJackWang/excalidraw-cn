@@ -186,8 +186,24 @@ export const setContainerNameToStorage = (name: string) => {
   }
 };
 
+export const setContainerNameParentIdToStorage = (parentId: string) => {
+  if (parentId) {
+    localStorage.setItem(
+      STORAGE_KEYS.LOCAL_STORAGE_CONTAINER_NAME_PARENT_ID,
+      parentId,
+    );
+  }
+};
+
 export const getContainerIdFromStorage = () => {
   localStorage.getItem(STORAGE_KEYS.LOCAL_STORAGE_CONTAINER_ID);
+};
+
+export const getContainerNameParentIdFromStorage = () => {
+  return (
+    localStorage.getItem(STORAGE_KEYS.LOCAL_STORAGE_CONTAINER_NAME_PARENT_ID) ||
+    STORAGE_KEYS.LOCAL_STORAGE_DEFAULT_CONTAINER_NAME_PARENT_ID
+  );
 };
 
 export const getContainerNameFromStorage = () => {

@@ -2,8 +2,10 @@ import localforage from "localforage";
 import {
   getContainerListFromStorage,
   getContainerNameFromStorage,
+  getContainerNameParentIdFromStorage,
   setContainerListToStorage,
   setContainerNameToStorage,
+  setContainerNameParentIdToStorage,
   setElementsToStorage,
 } from "./localStorage";
 import { message } from "antd";
@@ -45,6 +47,16 @@ export const getExamStudentOpenFileNameFromLocalForage = async () => {
   try {
     const createFileName = await STORE_EXAM_STUDENT.getItem("openFileName");
     return createFileName;
+  } catch (error: any) {
+    // Unable to access window.localStorage
+    console.error(error);
+  }
+};
+
+export const getExamStudentOpenFileNameParentIdFromLocalForage = async () => {
+  try {
+    const parentId = await STORE_EXAM_STUDENT.getItem("parentId");
+    return parentId;
   } catch (error: any) {
     // Unable to access window.localStorage
     console.error(error);
@@ -112,12 +124,16 @@ export const executeExamStudentCommand = async () => {
     if (command === "openExcalidrawFile") {
       const openFileName =
         (await getExamStudentOpenFileNameFromLocalForage()) as string;
+      const openFileNameParentId =
+        (await getExamStudentOpenFileNameParentIdFromLocalForage()) as string;
 
       console.log(`打开文件:${openFileName}`);
       message.success(`open file:${openFileName}`);
       setContainerNameToStorage(openFileName);
+      setContainerNameParentIdToStorage(openFileNameParentId);
       const queryResult = (await queryExcalidrawFileData(
         openFileName,
+        openFileNameParentId,
       )) as Object;
       console.log(`queryResult:${JSON.stringify(queryResult)}`);
       const resJson = JSON.parse(JSON.stringify(queryResult));
@@ -140,8 +156,10 @@ export const executeExamStudentCommand = async () => {
     }
 
     const containerName = getContainerNameFromStorage();
+    const parentId = getContainerNameParentIdFromStorage();
     const queryResult = (await queryExcalidrawFileData(
       containerName,
+      parentId,
     )) as Object;
     console.log(`queryResult:${JSON.stringify(queryResult)}`);
     const resJson = JSON.parse(JSON.stringify(queryResult));
